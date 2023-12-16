@@ -16,7 +16,7 @@ To get started with building AOSP GSI, you'll need to get familiar with [Git and
     ```
 
 ## Credits
-These people have helped this project in some way or another, so they should be the ones who receive all the credit:
+Special thanks to these people because this repository would not be possible without their efforts on other projects:
 - [phhusson](https://github.com/phhusson)
 - [ponces](https://github.com/ponces)
 - [AndyYan](https://github.com/AndyCGYan)
