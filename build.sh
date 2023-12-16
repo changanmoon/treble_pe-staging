@@ -2,26 +2,26 @@
 
 echo
 echo "--------------------------------------"
-echo "          AOSP 14.0 Buildbot          "
+echo "       Pixel Experience Buildbot      "
 echo "                  by                  "
-echo "                ponces                "
+echo "             changanmoon              "
 echo "--------------------------------------"
 echo
 
 set -e
 
-BL=$PWD/treble_aosp
+BL=$PWD/treble_pe-staging
 BD=$HOME/builds
 
 initRepos() {
     if [ ! -d .repo ]; then
         echo "--> Initializing workspace"
-        repo init -u https://android.googlesource.com/platform/manifest -b android-14.0.0_r18 --git-lfs
+        repo init -u https://github.com/PixelExperience-Staging/manifest -b fourteen --git-lfs
         echo
 
         echo "--> Preparing local manifest"
         mkdir -p .repo/local_manifests
-        cp $BL/build/manifest.xml .repo/local_manifests/aosp.xml
+        cp $BL/build/manifest.xml .repo/local_manifests/pixel.xml
         echo
     fi
 }
@@ -37,14 +37,14 @@ applyPatches() {
     bash $BL/patch.sh $BL trebledroid
     echo
 
-    echo "--> Applying personal patches"
+    echo "--> Applying Ponces's personal patches"
     bash $BL/patch.sh $BL personal
     echo
 
     echo "--> Generating makefiles"
     cd device/phh/treble
-    cp $BL/build/aosp.mk .
-    bash generate.sh aosp
+    cp $BL/build/pixel.mk .
+    bash generate.sh pixel
     cd ../../..
     echo
 }
@@ -101,10 +101,10 @@ buildVndkliteVariants() {
 generatePackages() {
     echo "--> Generating packages"
     buildDate="$(date +%Y%m%d)"
-    xz -cv $BD/system-treble_arm64_bvN.img -T0 > $BD/aosp-arm64-ab-vanilla-14.0-$buildDate.img.xz
-    xz -cv $BD/system-treble_arm64_bvN-vndklite.img -T0 > $BD/aosp-arm64-ab-vanilla-vndklite-14.0-$buildDate.img.xz
-    xz -cv $BD/system-treble_arm64_bgN.img -T0 > $BD/aosp-arm64-ab-gapps-14.0-$buildDate.img.xz
-    xz -cv $BD/system-treble_arm64_bgN-vndklite.img -T0 > $BD/aosp-arm64-ab-gapps-vndklite-14.0-$buildDate.img.xz
+    xz -cv $BD/system-treble_arm64_bvN.img -T0 > $BD/PixelExperience-arm64-ab-vanilla-14.0-$buildDate.img.xz
+    xz -cv $BD/system-treble_arm64_bvN-vndklite.img -T0 > $BD/PixelExperience-arm64-ab-vanilla-vndklite-14.0-$buildDate.img.xz
+    xz -cv $BD/system-treble_arm64_bgN.img -T0 > $BD/PixelExperience-arm64-ab-gapps-14.0-$buildDate.img.xz
+    xz -cv $BD/system-treble_arm64_bgN-vndklite.img -T0 > $BD/PixelExperience-arm64-ab-gapps-vndklite-14.0-$buildDate.img.xz
     rm -rf $BD/system-*.img
     echo
 }
@@ -115,7 +115,7 @@ generateOta() {
     buildDate="$(date +%Y%m%d)"
     timestamp="$START"
     json="{\"version\": \"$version\",\"date\": \"$timestamp\",\"variants\": ["
-    find $BD/ -name "aosp-*-14.0-$buildDate.img.xz" | sort | {
+    find $BD/ -name "PixelExperience-*-14.0-$buildDate.img.xz" | sort | {
         while read file; do
             filename="$(basename $file)"
             if [[ $filename == *"vanilla-vndklite"* ]]; then
@@ -128,7 +128,7 @@ generateOta() {
                 name="treble_arm64_bgN"
             fi
             size=$(wc -c $file | awk '{print $1}')
-            url="https://github.com/ponces/treble_aosp/releases/download/$version/$filename"
+            url="https://github.com/changanmoon/treble_pe-staging/releases/download/$version/$filename"
             json="${json} {\"name\": \"$name\",\"size\": \"$size\",\"url\": \"$url\"},"
         done
         json="${json%?}]}"
